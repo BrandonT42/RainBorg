@@ -56,7 +56,7 @@ namespace DiscordTRTLBot
             UserStats[Id].Tips.Add(new Tip(Date, Channel, Amount));
             if (UserStats[Channel].TipAverage == 0)
                 UserStats[Channel].TipAverage = Amount;
-            else UserStats[Channel].TipAverage = (UserStats[Channel].TipAverage + Amount / 2);
+            else UserStats[Channel].TipAverage = (UserStats[Channel].TipAverage + Amount) / 2;
             UserStats[Channel].TotalTips++;
             UserStats[Channel].TotalAmount += Amount;
 
@@ -66,14 +66,14 @@ namespace DiscordTRTLBot
             ChannelStats[Id].Tips.Add(new Tip(Date, Channel, Amount));
             if (ChannelStats[Channel].TipAverage == 0)
                 ChannelStats[Channel].TipAverage = Amount;
-            else ChannelStats[Channel].TipAverage = (ChannelStats[Channel].TipAverage + Amount / 2);
+            else ChannelStats[Channel].TipAverage = (ChannelStats[Channel].TipAverage + Amount) / 2;
             ChannelStats[Channel].TotalTips++;
             ChannelStats[Channel].TotalAmount += Amount;
 
             // Update global stats
             if (GlobalStats.TipAverage == 0)
                 GlobalStats.TipAverage = Amount;
-            else GlobalStats.TipAverage = (GlobalStats.TipAverage + Amount / 2);
+            else GlobalStats.TipAverage = (GlobalStats.TipAverage + Amount) / 2;
             GlobalStats.TotalTips++;
             GlobalStats.TotalAmount += Amount;
 
