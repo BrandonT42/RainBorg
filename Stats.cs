@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace DiscordTRTLBot
+namespace RainBorg
 {
     // Utility class to hold tip information
     class Tip
@@ -54,16 +54,16 @@ namespace DiscordTRTLBot
             if (!UserStats.ContainsKey(Id))
                 UserStats.Add(Id, new StatTracker());
             UserStats[Id].Tips.Add(new Tip(Date, Channel, Amount));
-            if (UserStats[Channel].TipAverage == 0)
-                UserStats[Channel].TipAverage = Amount;
-            else UserStats[Channel].TipAverage = (UserStats[Channel].TipAverage + Amount) / 2;
-            UserStats[Channel].TotalTips++;
-            UserStats[Channel].TotalAmount += Amount;
+            if (UserStats[Id].TipAverage == 0)
+                UserStats[Id].TipAverage = Amount;
+            else UserStats[Id].TipAverage = (UserStats[Id].TipAverage + Amount) / 2;
+            UserStats[Id].TotalTips++;
+            UserStats[Id].TotalAmount += Amount;
 
             // Update channel stats
             if (!ChannelStats.ContainsKey(Channel))
                 ChannelStats.Add(Channel, new StatTracker());
-            ChannelStats[Id].Tips.Add(new Tip(Date, Channel, Amount));
+            ChannelStats[Channel].Tips.Add(new Tip(Date, Channel, Amount));
             if (ChannelStats[Channel].TipAverage == 0)
                 ChannelStats[Channel].TipAverage = Amount;
             else ChannelStats[Channel].TipAverage = (ChannelStats[Channel].TipAverage + Amount) / 2;
@@ -104,10 +104,12 @@ namespace DiscordTRTLBot
         public static Task Update()
         {
             // Store values
-            JObject StatSheet = new JObject();
-            StatSheet["globalStats"] = JToken.FromObject(GlobalStats);
-            StatSheet["channelStats"] = JToken.FromObject(ChannelStats);
-            StatSheet["userStats"] = JToken.FromObject(UserStats);
+            JObject StatSheet = new JObject
+            {
+                ["globalStats"] = JToken.FromObject(GlobalStats),
+                ["channelStats"] = JToken.FromObject(ChannelStats),
+                ["userStats"] = JToken.FromObject(UserStats)
+            };
 
             // Flush to file
             File.WriteAllText(Constants.StatSheet, StatSheet.ToString());
