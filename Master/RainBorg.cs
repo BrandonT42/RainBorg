@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -20,6 +22,15 @@ namespace RainBorg
         {
             // Vanity
             Console.WriteLine(Banner);
+
+            // Resume if told to
+            if (args.Length > 0 && args[0] == "true")
+            {
+                Console.WriteLine("{0} {1}    Resuming bot...", DateTime.Now.ToString("HH:mm:ss"), "RainBorg");
+                JObject Resuming = JObject.Parse(File.ReadAllText(Constants.ResumeFile));
+                UserPools = Resuming["userPools"].ToObject<Dictionary<ulong, List<ulong>>>();
+                Greylist = Resuming["greylist"].ToObject<List<ulong>>();
+            }
 
             // Create exit handler
             handler = new ConsoleEventDelegate(ConsoleEventCallback);
@@ -111,7 +122,7 @@ namespace RainBorg
             // Load local files
             Console.WriteLine("{0} {1}    Loading config", DateTime.Now.ToString("HH:mm:ss"), "RainBorg");
             await Config.Load();
-            Console.WriteLine("{0} {1}    Loadied config", DateTime.Now.ToString("HH:mm:ss"), "RainBorg");
+            Console.WriteLine("{0} {1}    Loaded config", DateTime.Now.ToString("HH:mm:ss"), "RainBorg");
             Console.WriteLine("{0} {1}    Loading stats", DateTime.Now.ToString("HH:mm:ss"), "RainBorg");
             await Stats.Load();
             Console.WriteLine("{0} {1}    Loaded stats", DateTime.Now.ToString("HH:mm:ss"), "RainBorg");
@@ -149,6 +160,20 @@ namespace RainBorg
         {
             // Write message to console
             Console.WriteLine(arg);
+
+            // Relaunch if disconnected
+            if (arg.Message.Contains("Disconnected"))
+            {
+                Console.WriteLine("{0} {1}    Relaunching bot...", DateTime.Now.ToString("HH:mm:ss"), "RainBorg");
+                JObject Resuming = new JObject
+                {
+                    ["userPools"] = JToken.FromObject(UserPools),
+                    ["greylist"] = JToken.FromObject(Greylist)
+                };
+                File.WriteAllText(Constants.ResumeFile, Resuming.ToString());
+                Process.Start("RelaunchUtility.exe", "RainBorg.exe");
+                Environment.Exit(0);
+            }
 
             // Completed
             return Task.CompletedTask;

@@ -11,10 +11,7 @@ namespace RainBorg
         {
             // Check if config file exists and create it if it doesn't
             if (!File.Exists(Constants.Config))
-            {
-                File.Create(Constants.Config).Close();
                 await Save();
-            }
             else
             {
                 // Load values

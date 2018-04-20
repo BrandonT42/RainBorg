@@ -80,10 +80,7 @@ namespace RainBorg
         {
             // Create stat sheet if it doesn't exist
             if (!File.Exists(Constants.StatSheet))
-            {
-                File.Create(Constants.StatSheet).Close();
                 await Update();
-            }
             else
             {
                 // Load values
