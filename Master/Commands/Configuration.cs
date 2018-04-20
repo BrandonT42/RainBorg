@@ -110,6 +110,23 @@ namespace RainBorg.Commands
             }
         }
 
+        [Command("accountage")]
+        public async Task AccountAgeAsync(int s, [Remainder]string Remainder = null)
+        {
+            if (RainBorg.Operators.Contains(Context.Message.Author.Id))
+            {
+                RainBorg.accountAge = s;
+                await Config.Save();
+                try
+                {
+                    // Add reaction to message
+                    IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
+                    await Context.Message.AddReactionAsync(emote);
+                }
+                catch { }
+            }
+        }
+
         [Command("timeout")]
         public async Task TimeoutAsync(int s, [Remainder]string Remainder = null)
         {

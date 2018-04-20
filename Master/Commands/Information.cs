@@ -29,13 +29,14 @@ namespace RainBorg.Commands
                 string m = "```Current tip balance: " + String.Format("{0:n}", RainBorg.tipBalance) + " TRTL\r\n" +
                     "Amount needed for next tip: " + String.Format("{0:n}", i) + " TRTL\r\n" +
                     "Next tip at: " + RainBorg.waitNext + "\r\n" +
-                    "Tip minimum: " + String.Format("{0:n}", RainBorg.tipMin) + "\r\n" +
-                    "Tip maximum: " + String.Format("{0:n}", RainBorg.tipMax) + "\r\n" +
+                    "Tip minimum: " + String.Format("{0:n}", RainBorg.tipMin) + " TRTL\r\n" +
+                    "Tip maximum: " + String.Format("{0:n}", RainBorg.tipMax) + " TRTL\r\n" +
                     "Minimum users: " + RainBorg.userMin + "\r\n" +
                     "Maximum users: " + RainBorg.userMax + "\r\n" +
                     "Minimum wait time: " + String.Format("{0:n0}", RainBorg.waitMin) + "ms (" + TimeSpan.FromMilliseconds(RainBorg.waitMin).ToString() + ")\r\n" +
                     "Maximum wait time: " + String.Format("{0:n0}", RainBorg.waitMax) + "ms (" + TimeSpan.FromMilliseconds(RainBorg.waitMax).ToString() + ")\r\n" +
                     "Message timeout: " + String.Format("{0:n0}", RainBorg.timeoutPeriod) + "ms (" + TimeSpan.FromMilliseconds(RainBorg.timeoutPeriod).ToString() + ")\r\n" +
+                    "Minimum account age: " + TimeSpan.FromHours(RainBorg.accountAge).ToString() + "\r\n" +
                     "Operators: " + RainBorg.Operators.Count + "\r\n" +
                     "Blacklisted: " + RainBorg.Blacklist.Count + "\r\n" +
                     "Greylisted: " + RainBorg.Greylist.Count + "\r\n" +
@@ -143,7 +144,7 @@ namespace RainBorg.Commands
                     m += "#" + Context.Client.GetChannel(Id) + " Channel Stats:\r\n";
                     m += "Total TRTL Sent: " + String.Format("{0:n}", Stats.ChannelStats[Id].TotalAmount) + " TRTL\r\n";
                     m += "Total Tips Sent: " + Stats.ChannelStats[Id].TotalTips + "\r\n";
-                    m += "Average Tip: " + String.Format("{0:n}", Stats.ChannelStats[Id].TipAverage) + "TRTL";
+                    m += "Average Tip: " + String.Format("{0:n}", Stats.ChannelStats[Id].TipAverage) + " TRTL";
                 }
 
                 // User stats
@@ -152,7 +153,7 @@ namespace RainBorg.Commands
                     m += "@" + Context.Client.GetUser(Id).Username + " User Stats:\r\n";
                     m += "Total TRTL Sent: " + String.Format("{0:n}", Stats.UserStats[Id].TotalAmount) + " TRTL\r\n";
                     m += "Total Tips Sent: " + Stats.UserStats[Id].TotalTips + "\r\n";
-                    m += "Average Tip: " + String.Format("{0:n}", Stats.UserStats[Id].TipAverage) + "TRTL";
+                    m += "Average Tip: " + String.Format("{0:n}", Stats.UserStats[Id].TipAverage) + " TRTL";
                 }
 
                 // Global stats
@@ -161,7 +162,7 @@ namespace RainBorg.Commands
                     m += "Global Stats:\r\n";
                     m += "Total TRTL Sent: " + String.Format("{0:n}", Stats.GlobalStats.TotalAmount) + " TRTL\r\n";
                     m += "Total Tips Sent: " + Stats.GlobalStats.TotalTips + "\r\n";
-                    m += "Average Tip: " + String.Format("{0:n}", Stats.GlobalStats.TipAverage) + "TRTL";
+                    m += "Average Tip: " + String.Format("{0:n}", Stats.GlobalStats.TipAverage) + " TRTL";
                 }
 
                 m += "```";
