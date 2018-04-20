@@ -75,10 +75,10 @@ namespace RainBorg.Commands
                         {
                             RainBorg.UserPools.Remove(Id);
                             RainBorg.ChannelWeight.RemoveAll(ChannelId => ChannelId == Id);
-                            await Config.Save();
                         }
                     }
                     catch { }
+                await Config.Save();
                 try
                 {
                     // Add reaction to message
@@ -90,21 +90,17 @@ namespace RainBorg.Commands
         }
 
         [Command("removechannel")]
-        public async Task RemoveChannelMentionAsync(params SocketChannel[] Channels)
+        public async Task RemoveChannelMentionAsync([Remainder]string Remainder = null)
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
-                foreach (SocketChannel Channel in Channels)
-                    try
+                foreach (SocketChannel Channel in Context.Message.MentionedChannels)
+                    if (RainBorg.UserPools.ContainsKey(Channel.Id))
                     {
-                        if (RainBorg.UserPools.ContainsKey(Channel.Id))
-                        {
-                            RainBorg.UserPools.Remove(Channel.Id);
-                            RainBorg.ChannelWeight.RemoveAll(ChannelId => ChannelId == Channel.Id);
-                            await Config.Save();
-                        }
+                        RainBorg.UserPools.Remove(Channel.Id);
+                        RainBorg.ChannelWeight.RemoveAll(ChannelId => ChannelId == Channel.Id);
                     }
-                    catch { }
+                await Config.Save();
                 try
                 {
                     // Add reaction to message
@@ -116,96 +112,84 @@ namespace RainBorg.Commands
         }
 
         [Command("addstatuschannel")]
-        public async Task AddStatusChannelMentionAsync(SocketChannel Channel, [Remainder]string Remainder = null)
+        public async Task AddStatusChannelMentionAsync([Remainder]string Remainder = null)
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
+                foreach (SocketChannel Channel in Context.Message.MentionedChannels)
+                    if (!RainBorg.StatusChannel.Contains(Channel.Id))
+                        RainBorg.StatusChannel.Add(Channel.Id);
+                await Config.Save();
                 try
                 {
-                    if (!RainBorg.StatusChannel.Contains(Channel.Id))
-                    {
-                        RainBorg.StatusChannel.Add(Channel.Id);
-                        await Config.Save();
-                        try
-                        {
-                            // Add reaction to message
-                            IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
-                            await Context.Message.AddReactionAsync(emote);
-                        }
-                        catch { }
-                    }
+                    // Add reaction to message
+                    IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
+                    await Context.Message.AddReactionAsync(emote);
                 }
                 catch { }
             }
         }
 
         [Command("addstatuschannel")]
-        public async Task AddStatusChannelAsync(ulong Id, [Remainder]string Remainder = null)
+        public async Task AddStatusChannelAsync(params ulong[] Channels)
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
+                foreach (ulong Channel in Channels)
+                    try
+                    {
+                        if (!RainBorg.StatusChannel.Contains(Channel))
+                            RainBorg.StatusChannel.Add(Channel);
+                    }
+                    catch { }
+                await Config.Save();
                 try
                 {
-                    if (!RainBorg.StatusChannel.Contains(Id))
-                    {
-                        RainBorg.StatusChannel.Add(Id);
-                        await Config.Save();
-                        try
-                        {
-                            // Add reaction to message
-                            IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
-                            await Context.Message.AddReactionAsync(emote);
-                        }
-                        catch { }
-                    }
+                    // Add reaction to message
+                    IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
+                    await Context.Message.AddReactionAsync(emote);
                 }
                 catch { }
             }
         }
 
         [Command("removestatuschannel")]
-        public async Task RemoveStatusChannelAsync(ulong Id, [Remainder]string Remainder = null)
+        public async Task RemoveStatusChannelAsync(params ulong[] Channels)
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
+                foreach (ulong Channel in Channels)
+                    try
+                    {
+                        if (RainBorg.StatusChannel.Contains(Channel))
+                            RainBorg.StatusChannel.Remove(Channel);
+                    }
+                    catch { }
+                await Config.Save();
                 try
                 {
-                    if (RainBorg.StatusChannel.Contains(Id))
-                    {
-                        RainBorg.StatusChannel.Remove(Id);
-                        await Config.Save();
-                        try
-                        {
-                            // Add reaction to message
-                            IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
-                            await Context.Message.AddReactionAsync(emote);
-                        }
-                        catch { }
-                    }
+                    // Add reaction to message
+                    IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
+                    await Context.Message.AddReactionAsync(emote);
                 }
                 catch { }
             }
         }
 
         [Command("removestatuschannel")]
-        public async Task RemoveStatusChannelMentionAsync(SocketChannel Channel, [Remainder]string Remainder = null)
+        public async Task RemoveStatusChannelMentionAsync([Remainder]string Remainder = null)
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
-                try
-                {
+                foreach (SocketChannel Channel in Context.Message.MentionedChannels)
                     if (RainBorg.StatusChannel.Contains(Channel.Id))
-                    {
                         RainBorg.StatusChannel.Remove(Channel.Id);
-                        await Config.Save();
-                        try
-                        {
-                            // Add reaction to message
-                            IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
-                            await Context.Message.AddReactionAsync(emote);
-                        }
-                        catch { }
-                    }
+                await Config.Save();
+                try
+                {
+                    // Add reaction to message
+                    IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
+                    await Context.Message.AddReactionAsync(emote);
                 }
                 catch { }
             }
@@ -218,9 +202,7 @@ namespace RainBorg.Commands
             {
                 foreach (SocketUser user in Context.Message.MentionedUsers)
                     if (!RainBorg.Operators.Contains(user.Id))
-                    {
                         RainBorg.Operators.Add(user.Id);
-                    }
                 await Config.Save();
                 try
                 {
@@ -241,9 +223,7 @@ namespace RainBorg.Commands
                     try
                     {
                         if (!RainBorg.Operators.Contains(Context.Client.GetUser(user).Id))
-                        {
                             RainBorg.Operators.Add(Context.Client.GetUser(user).Id);
-                        }
                     }
                     catch { }
                 await Config.Save();
@@ -264,9 +244,7 @@ namespace RainBorg.Commands
             {
                 foreach (SocketUser user in Context.Message.MentionedUsers)
                     if (RainBorg.Operators.Contains(user.Id))
-                    {
                         RainBorg.Operators.Remove(user.Id);
-                    }
                 await Config.Save();
                 try
                 {
@@ -287,9 +265,7 @@ namespace RainBorg.Commands
                     try
                     {
                         if (RainBorg.Operators.Contains(Context.Client.GetUser(user).Id))
-                        {
                             RainBorg.Operators.Remove(Context.Client.GetUser(user).Id);
-                        }
                     }
                     catch { }
                 await Config.Save();

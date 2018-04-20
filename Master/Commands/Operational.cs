@@ -11,7 +11,7 @@ namespace RainBorg.Commands
     public partial class Commands : ModuleBase<SocketCommandContext>
     {
         [Command("pause")]
-        public async Task PauseAsync(params SocketUser[] users)
+        public async Task PauseAsync([Remainder]string Remainder = null)
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
@@ -28,7 +28,7 @@ namespace RainBorg.Commands
         }
 
         [Command("resume")]
-        public async Task StartAsync(params SocketUser[] users)
+        public async Task ResumeAsync([Remainder]string Remainder = null)
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
@@ -45,17 +45,37 @@ namespace RainBorg.Commands
         }
 
         [Command("adduser")]
-        public async Task AddUserAsync(params SocketUser[] users)
+        public async Task AddUserAsync([Remainder]string Remainder = null)
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
-                foreach (SocketUser user in users)
+                foreach (SocketUser user in Context.Message.MentionedUsers)
                     try
                     {
                         if (user != null && RainBorg.UserPools.ContainsKey(Context.Channel.Id) && !RainBorg.UserPools[Context.Channel.Id].Contains(user.Id))
-                        {
                             RainBorg.UserPools[Context.Channel.Id].Add(user.Id);
-                        }
+                    }
+                    catch { }
+                try
+                {
+                    // Add reaction to message
+                    IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
+                    await Context.Message.AddReactionAsync(emote);
+                }
+                catch { }
+            }
+        }
+
+        [Command("adduser")]
+        public async Task AddUserAsync(params ulong[] users)
+        {
+            if (RainBorg.Operators.Contains(Context.Message.Author.Id))
+            {
+                foreach (ulong user in users)
+                    try
+                    {
+                        if (RainBorg.UserPools.ContainsKey(Context.Channel.Id) && !RainBorg.UserPools[Context.Channel.Id].Contains(user))
+                            RainBorg.UserPools[Context.Channel.Id].Add(user);
                     }
                     catch { }
                 try
@@ -69,17 +89,37 @@ namespace RainBorg.Commands
         }
 
         [Command("removeuser")]
-        public async Task RemoveUserAsync(params SocketUser[] users)
+        public async Task RemoveUserAsync([Remainder]string Remainder = null)
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
-                foreach (SocketUser user in users)
+                foreach (SocketUser user in Context.Message.MentionedUsers)
                     try
                     {
-                        if (user != null && RainBorg.UserPools.ContainsKey(Context.Channel.Id) && RainBorg.UserPools[Context.Channel.Id].Contains(user.Id))
-                        {
+                        if (RainBorg.UserPools.ContainsKey(Context.Channel.Id) && RainBorg.UserPools[Context.Channel.Id].Contains(user.Id))
                             RainBorg.UserPools[Context.Channel.Id].Remove(user.Id);
-                        }
+                    }
+                    catch { }
+                try
+                {
+                    // Add reaction to message
+                    IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
+                    await Context.Message.AddReactionAsync(emote);
+                }
+                catch { }
+            }
+        }
+
+        [Command("removeuser")]
+        public async Task RemoveUserAsync(params ulong[] users)
+        {
+            if (RainBorg.Operators.Contains(Context.Message.Author.Id))
+            {
+                foreach (ulong user in users)
+                    try
+                    {
+                        if (RainBorg.UserPools.ContainsKey(Context.Channel.Id) && RainBorg.UserPools[Context.Channel.Id].Contains(user))
+                            RainBorg.UserPools[Context.Channel.Id].Remove(user);
                     }
                     catch { }
                 try

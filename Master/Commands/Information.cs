@@ -35,7 +35,7 @@ namespace RainBorg.Commands
                     "Maximum users: " + RainBorg.userMax + "\r\n" +
                     "Minimum wait time: " + String.Format("{0:n0}", RainBorg.waitMin) + "ms (" + TimeSpan.FromMilliseconds(RainBorg.waitMin).ToString() + ")\r\n" +
                     "Maximum wait time: " + String.Format("{0:n0}", RainBorg.waitMax) + "ms (" + TimeSpan.FromMilliseconds(RainBorg.waitMax).ToString() + ")\r\n" +
-                    "Message timeout: " + RainBorg.timeoutPeriod + "\r\n" +
+                    "Message timeout: " + String.Format("{0:n0}", RainBorg.timeoutPeriod) + "ms (" + TimeSpan.FromMilliseconds(RainBorg.timeoutPeriod).ToString() + ")\r\n" +
                     "Operators: " + RainBorg.Operators.Count + "\r\n" +
                     "Blacklisted: " + RainBorg.Blacklist.Count + "\r\n" +
                     "Greylisted: " + RainBorg.Greylist.Count + "\r\n" +
@@ -52,13 +52,11 @@ namespace RainBorg.Commands
             {
                 string m = "```Operators:\r\n";
                 foreach (ulong i in RainBorg.Operators)
-                {
                     try
                     {
                         m += Context.Client.GetUser(i).Username + "\r\n";
                     }
                     catch { }
-                }
                 m += "```";
                 await Context.Message.Author.SendMessageAsync(m);
             }
@@ -76,7 +74,7 @@ namespace RainBorg.Commands
                         m += Context.Client.GetUser(i).Username + " (" + i + ")\r\n";
                     }
                     catch { }
-                m += "\r\n\r\nGreylisted Users:\r\n";
+                m += "\r\nGreylisted Users:\r\n";
                 foreach (ulong i in RainBorg.Greylist)
                     try
                     {
@@ -94,9 +92,7 @@ namespace RainBorg.Commands
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
                 string m = "```Current User Pools:\r\n";
-
                 foreach (KeyValuePair<ulong, List<ulong>> entry in RainBorg.UserPools)
-                {
                     try
                     {
                         m += "#" + Context.Client.GetChannel(entry.Key) + " (" + entry.Key + ") :\r\n";
@@ -106,10 +102,7 @@ namespace RainBorg.Commands
                         m += "\r\n\r\n";
                     }
                     catch { }
-                }
-
                 m += "```";
-
                 await Context.Message.Author.SendMessageAsync(m);
             }
         }
@@ -121,7 +114,6 @@ namespace RainBorg.Commands
             {
                 string m = "```Tippable Channels:\r\n";
                 foreach (KeyValuePair<ulong, List<ulong>> entry in RainBorg.UserPools)
-                {
                     try
                     {
                         m += "#" + Context.Client.GetChannel(entry.Key) + ", weight of ";
@@ -133,7 +125,6 @@ namespace RainBorg.Commands
                         m += "\r\n";
                     }
                     catch { }
-                }
                 m += "```";
                 await Context.Message.Author.SendMessageAsync(m);
             }

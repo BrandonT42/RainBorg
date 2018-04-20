@@ -66,7 +66,7 @@ namespace RainBorg.Commands
                 await Config.Save();
                 try
                 {
-                    
+                    // Add reaction to message
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
@@ -85,7 +85,7 @@ namespace RainBorg.Commands
                 await Config.Save();
                 try
                 {
-                    
+                    // Add reaction to message
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }

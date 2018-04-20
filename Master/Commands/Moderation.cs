@@ -65,9 +65,7 @@ namespace RainBorg.Commands
             {
                 foreach (SocketUser user in Context.Message.MentionedUsers)
                     if (RainBorg.Blacklist.Contains(user.Id))
-                    {
                         RainBorg.Blacklist.Remove(user.Id);
-                    }
                 await Config.Save();
                 await ReplyAsync("Removed users from blacklist, they may receive tips again.");
                 try
@@ -89,9 +87,7 @@ namespace RainBorg.Commands
                     try
                     {
                         if (RainBorg.Blacklist.Contains(Context.Client.GetUser(user).Id))
-                        {
                             RainBorg.Blacklist.Remove(Context.Client.GetUser(user).Id);
-                        }
                     }
                     catch { }
                 await Config.Save();
@@ -112,21 +108,17 @@ namespace RainBorg.Commands
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
                 foreach (SocketUser user in Context.Message.MentionedUsers)
-                    try
+                    if (user != null && !RainBorg.Greylist.Contains(user.Id))
                     {
-                        if (user != null && !RainBorg.Greylist.Contains(user.Id))
-                        {
-                            EmbedBuilder builder = new EmbedBuilder();
-                            builder.WithColor(Color.Green);
-                            builder.WithTitle("SPAM WARNING");
-                            builder.Description = RainBorg.spamWarning;
+                        EmbedBuilder builder = new EmbedBuilder();
+                        builder.WithColor(Color.Green);
+                        builder.WithTitle("SPAM WARNING");
+                        builder.Description = RainBorg.spamWarning;
 
-                            RainBorg.Greylist.Add(user.Id);
-                            await RainBorg.RemoveUserAsync(user, 0);
-                            await user.SendMessageAsync("", false, builder);
-                        }
+                        RainBorg.Greylist.Add(user.Id);
+                        await RainBorg.RemoveUserAsync(user, 0);
+                        await user.SendMessageAsync("", false, builder);
                     }
-                    catch { }
                 try
                 {
                     
