@@ -143,7 +143,7 @@ namespace RainBorg.Commands
                     m += "#" + Context.Client.GetChannel(Id) + " Channel Stats:\r\n";
                     m += "Total TRTL Sent: " + String.Format("{0:n}", Stats.ChannelStats[Id].TotalAmount) + " TRTL\r\n";
                     m += "Total Tips Sent: " + Stats.ChannelStats[Id].TotalTips + "\r\n";
-                    m += "Average Tip: " + String.Format("{0:n}", Stats.ChannelStats[Id].TipAverage);
+                    m += "Average Tip: " + String.Format("{0:n}", Stats.ChannelStats[Id].TipAverage) + "TRTL";
                 }
 
                 // User stats
@@ -152,7 +152,7 @@ namespace RainBorg.Commands
                     m += "@" + Context.Client.GetUser(Id).Username + " User Stats:\r\n";
                     m += "Total TRTL Sent: " + String.Format("{0:n}", Stats.UserStats[Id].TotalAmount) + " TRTL\r\n";
                     m += "Total Tips Sent: " + Stats.UserStats[Id].TotalTips + "\r\n";
-                    m += "Average Tip: " + String.Format("{0:n}", Stats.UserStats[Id].TipAverage);
+                    m += "Average Tip: " + String.Format("{0:n}", Stats.UserStats[Id].TipAverage) + "TRTL";
                 }
 
                 // Global stats
@@ -161,7 +161,7 @@ namespace RainBorg.Commands
                     m += "Global Stats:\r\n";
                     m += "Total TRTL Sent: " + String.Format("{0:n}", Stats.GlobalStats.TotalAmount) + " TRTL\r\n";
                     m += "Total Tips Sent: " + Stats.GlobalStats.TotalTips + "\r\n";
-                    m += "Average Tip: " + String.Format("{0:n}", Stats.GlobalStats.TipAverage);
+                    m += "Average Tip: " + String.Format("{0:n}", Stats.GlobalStats.TipAverage) + "TRTL";
                 }
 
                 m += "```";
