@@ -23,6 +23,7 @@ namespace RainBorg
                 RainBorg.userMax = (int)Config["userMax"];
                 RainBorg.waitMin = (int)Config["waitMin"];
                 RainBorg.waitMax = (int)Config["waitMax"];
+                RainBorg.accountAge = (int)Config["accountAge"];
                 RainBorg.timeoutPeriod = (int)Config["timeoutPeriod"];
                 RainBorg.logLevel = (int)Config["logLevel"];
                 RainBorg.Operators = Config["operators"].ToObject<List<ulong>>();
@@ -48,6 +49,7 @@ namespace RainBorg
                 ["userMax"] = RainBorg.userMax,
                 ["waitMin"] = RainBorg.waitMin,
                 ["waitMax"] = RainBorg.waitMax,
+                ["accountAge"] = RainBorg.accountAge,
                 ["timeoutPeriod"] = RainBorg.timeoutPeriod,
                 ["logLevel"] = RainBorg.logLevel,
                 ["operators"] = JToken.FromObject(RainBorg.Operators),

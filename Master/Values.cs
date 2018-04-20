@@ -18,7 +18,7 @@ namespace RainBorg
             _timezone = TimeZone.CurrentTimeZone.StandardName,
             botAddress = "TRTLv12WtKJAzTNtxSkbcXf7mjeVApSqRYACtoJE2X52UBSce7qGAQ1JQgG3MmArnZSbkJXKqBXiPX2Mno7xD4tqD3p8SySoBc5",
             botPaymentId = "bca975edfe710a64337beb1685f32ab900989aa9767946efd8537f09db594bbd",
-            successReact = "kthx",
+            successReact = "heavy_check_mark",
             waitNext = "";
 
         public static double
@@ -34,6 +34,7 @@ namespace RainBorg
             waitMin = 1 * 60 * 1000,
             waitMax = 1 * 60 * 1000,
             waitTime = 1,
+            accountAge = 3,
             timeoutPeriod = 30000,
             logLevel = 1;
 
