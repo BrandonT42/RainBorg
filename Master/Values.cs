@@ -11,15 +11,14 @@ namespace RainBorg
         public static DiscordSocketClient _client;
         public static CommandService _commands;
         public static IServiceProvider _services;
-        
+
         public static string
             _username = "RainBorg",
             _version = "1.8",
-            _timezone = TimeZone.CurrentTimeZone.StandardName;
-
-        public static string
+            _timezone = TimeZone.CurrentTimeZone.StandardName,
             botAddress = "TRTLv12WtKJAzTNtxSkbcXf7mjeVApSqRYACtoJE2X52UBSce7qGAQ1JQgG3MmArnZSbkJXKqBXiPX2Mno7xD4tqD3p8SySoBc5",
             botPaymentId = "bca975edfe710a64337beb1685f32ab900989aa9767946efd8537f09db594bbd",
+            successReact = "",
             waitNext = "";
 
         public static double
@@ -40,7 +39,8 @@ namespace RainBorg
         public static List<ulong>
             Operators = new List<ulong>(),
             Blacklist = new List<ulong>(),
-            Greylist = new List<ulong>();
+            Greylist = new List<ulong>(),
+            OptedOut = new List<ulong>();
 
         public static Dictionary<ulong, List<ulong>>
             UserPools = new Dictionary<ulong, List<ulong>>();

@@ -54,28 +54,22 @@ namespace RainBorg
             if (!UserStats.ContainsKey(Id))
                 UserStats.Add(Id, new StatTracker());
             UserStats[Id].Tips.Add(new Tip(Date, Channel, Amount));
-            if (UserStats[Id].TipAverage == 0)
-                UserStats[Id].TipAverage = Amount;
-            else UserStats[Id].TipAverage = (UserStats[Id].TipAverage + Amount) / 2;
             UserStats[Id].TotalTips++;
             UserStats[Id].TotalAmount += Amount;
+            UserStats[Id].TipAverage = UserStats[Id].TotalAmount / UserStats[Id].TotalTips;
 
             // Update channel stats
             if (!ChannelStats.ContainsKey(Channel))
                 ChannelStats.Add(Channel, new StatTracker());
             ChannelStats[Channel].Tips.Add(new Tip(Date, Channel, Amount));
-            if (ChannelStats[Channel].TipAverage == 0)
-                ChannelStats[Channel].TipAverage = Amount;
-            else ChannelStats[Channel].TipAverage = (ChannelStats[Channel].TipAverage + Amount) / 2;
             ChannelStats[Channel].TotalTips++;
             ChannelStats[Channel].TotalAmount += Amount;
+            ChannelStats[Channel].TipAverage = ChannelStats[Channel].TotalAmount / ChannelStats[Channel].TotalTips;
 
             // Update global stats
-            if (GlobalStats.TipAverage == 0)
-                GlobalStats.TipAverage = Amount;
-            else GlobalStats.TipAverage = (GlobalStats.TipAverage + Amount) / 2;
             GlobalStats.TotalTips++;
             GlobalStats.TotalAmount += Amount;
+            GlobalStats.TipAverage = GlobalStats.TotalAmount / GlobalStats.TotalTips;
 
             // Completed
             return Task.CompletedTask;

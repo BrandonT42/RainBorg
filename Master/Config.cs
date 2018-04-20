@@ -29,6 +29,7 @@ namespace RainBorg
                 RainBorg.logLevel = (int)Config["logLevel"];
                 RainBorg.Operators = Config["operators"].ToObject<List<ulong>>();
                 RainBorg.Blacklist = Config["blacklist"].ToObject<List<ulong>>();
+                RainBorg.OptedOut = Config["optedOut"].ToObject<List<ulong>>();
                 RainBorg.ChannelWeight = Config["channelWeight"].ToObject<List<ulong>>();
                 RainBorg.StatusChannel = Config["statusChannel"].ToObject<List<ulong>>();
                 foreach (ulong Id in RainBorg.ChannelWeight)
@@ -52,6 +53,7 @@ namespace RainBorg
                 ["logLevel"] = RainBorg.logLevel,
                 ["operators"] = JToken.FromObject(RainBorg.Operators),
                 ["blacklist"] = JToken.FromObject(RainBorg.Blacklist),
+                ["optedOut"] = JToken.FromObject(RainBorg.OptedOut),
                 ["channelWeight"] = JToken.FromObject(RainBorg.ChannelWeight),
                 ["statusChannel"] = JToken.FromObject(RainBorg.StatusChannel)
             };
