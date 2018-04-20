@@ -1,7 +1,9 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -42,45 +44,55 @@ namespace RainBorg.Commands
         {
             string m = "```List of Commands:\r\n";
             m += "$balance - Check the bot's tip balance\r\n";
-            m += "$donate - Learn how you can donate to the tip pool";
-
+            m += "$donate - Learn how you can donate to the tip pool\r\n";
+            m += "$optout - Opt out of receiving tips from the bot\r\n";
+            m += "$optin - Opt back into receiving tips from the bot```";
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
-                m += "\r\n\r\nOperator Only Commands:\r\n";
-                m += "$info - Display current bot values\r\n";
-                m += "$addoperator - Adds users as new bot operators (Usage: $addoperator @user1 @user2)\r\n";
-                m += "$removeoperator - Removes users as bot operators (Usage: $removeoperator @user1 @user2)\r\n";
-                m += "$operators - List all bot operators\r\n";
-                m += "$exile - Blacklist users from receiving tips (Usage: $exile @user1 @user2)\r\n";
-                m += "$unexile - Remove users from blacklist (Usage: $unexile @user1 @user2)\r\n";
-                m += "$blacklist - Lists users that have been blacklisted\r\n";
-                m += "$waitmin - Sets the minimum wait time between tipping cycles (Usage: $waitmin milliseconds)\r\n";
-                m += "$waitmax - Sets the maximum wait time between tipping cycles (Usage: $waitmax milliseconds)\r\n";
-                m += "$usermin - Set the minimum number of users the bot needs to see in the tip pool before tipping (Usage: $usermin amount)\r\n";
-                m += "$usermax - Set the maximum number of users the bot will tip (Usage: $usermax amount)\r\n";
-                m += "$tipmin - Set the minimum tip (Usage: $tipmin amount)\r\n";
-                m += "$tipmax - Set the maximum tip (Usage: $tipmax amount)\r\n";
-                m += "$addchannel - Add a tippable channel (Usage: $addchannel #channel channelweight)\r\n";
-                m += "$removechannel - Removes a tippable channel (Usage: $removechannel #channel)\r\n";
-                m += "$addstatuschannel - Adds a status channel (Usage: $addstatuschannel #channel)\r\n";
-                m += "$removestatuschannel - Removes a status channel (Usage: $removestatuschannel #channel)\r\n";
-                m += "$userpools - Views all userpools in the current tip cycle\r\n";
-                m += "$channels - Lists all tippable channels\r\n";
-                m += "$warn - Issues a spam warning and greylists users from the current tip pool (Usage: $warn @user1 @user2)\r\n";
-                m += "$adduser - Manually add users to the tip pool in the current channel (Usage: $adduser @user1 @user2)\r\n";
-                m += "$dotip - Manually trigger the current tip cycle\r\n";
-                m += "$reset - Resets user pools and greylist\r\n";
-                m += "$pause - Pauses the bot\r\n";
-                m += "$resume - Resumes the bot if paused\r\n";
-                m += "$exit - Exit the bot```";
+                m += "Op-only message:\r\nOperator-only command documentation can be found at:\r\n";
+                m += "https://github.com/BrandonT42/RainBorg/wiki/Operator-Commands\r\n";
             }
-            else m += "```";
-
-            if (!RainBorg.Operators.Contains(Context.Message.Author.Id))
-                m += "Need more help? Check the wiki link below to learn how to be a part of the rain:\r\n" + RainBorg.wikiURL;
-
-
+            m += "Need more help? Check the wiki link below to learn how to be a part of the rain:\r\n" + RainBorg.wikiURL;
             await Context.Message.Author.SendMessageAsync(m);
+        }
+
+        [Command("optout")]
+        public async Task OutOutAsync([Remainder]string Remainder = null)
+        {
+            if (!RainBorg.OptedOut.Contains(Context.Message.Author.Id))
+            {
+                RainBorg.OptedOut.Add(Context.Message.Author.Id);
+                await RainBorg.RemoveUserAsync(Context.Message.Author, 0);
+                await Config.Save();
+                try
+                {
+                    SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                    IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
+                    await Context.Message.AddReactionAsync(emote);
+                }
+                catch { }
+                await Context.Message.Author.SendMessageAsync("You have opted out from receiving future tips.");
+            }
+            else await Context.Message.Author.SendMessageAsync("You have already opted out, use $optin to opt back into receiving tips.");
+        }
+
+        [Command("optin")]
+        public async Task OptInAsync([Remainder]string Remainder = null)
+        {
+            if (RainBorg.OptedOut.Contains(Context.Message.Author.Id))
+            {
+                RainBorg.OptedOut.Remove(Context.Message.Author.Id);
+                await Config.Save();
+                try
+                {
+                    SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                    IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
+                    await Context.Message.AddReactionAsync(emote);
+                }
+                catch { }
+                await Context.Message.Author.SendMessageAsync("You have opted back in, and will receive tips once again.");
+            }
+            else await Context.Message.Author.SendMessageAsync("You have not opted out, you are already able to receive tips.");
         }
     }
 }

@@ -27,22 +27,18 @@ namespace RainBorg.Commands
                 if (i < 0) i = 0;
 
                 string m = "```Current tip balance: " + String.Format("{0:n}", RainBorg.tipBalance) + " TRTL\r\n" +
-                    "Total tipped: " + Stats.GlobalStats.TotalAmount + " TRTL (" + Stats.GlobalStats.TotalTips + " tips)\r\n" +
-                    "Average tip: " + String.Format("{0:n}", Stats.GlobalStats.TipAverage) + " TRTL\r\n" +
-                    "Amount until next tip: " + String.Format("{0:n}", i) + " TRTL\r\n" +
+                    "Amount needed for next tip: " + String.Format("{0:n}", i) + " TRTL\r\n" +
                     "Tip minimum: " + String.Format("{0:n}", RainBorg.tipMin) + "\r\n" +
                     "Tip maximum: " + String.Format("{0:n}", RainBorg.tipMax) + "\r\n" +
                     "Minimum users: " + RainBorg.userMin + "\r\n" +
                     "Maximum users: " + RainBorg.userMax + "\r\n" +
                     "Minimum wait time: " + String.Format("{0:n0}", RainBorg.waitMin) + "ms (" + TimeSpan.FromMilliseconds(RainBorg.waitMin).ToString() + ")\r\n" +
                     "Maximum wait time: " + String.Format("{0:n0}", RainBorg.waitMax) + "ms (" + TimeSpan.FromMilliseconds(RainBorg.waitMax).ToString() + ")\r\n" +
-                    "Current wait time: " + String.Format("{0:n0}", RainBorg.waitTime) + "ms (" + RainBorg.waitNext + ")\r\n" +
+                    "Next tip at: " + RainBorg.waitNext + "\r\n" +
                     "Operators: " + RainBorg.Operators.Count + "\r\n" +
                     "Blacklisted: " + RainBorg.Blacklist.Count + "\r\n" +
                     "Greylisted: " + RainBorg.Greylist.Count + "\r\n" +
-                    "Channel Count: " + RainBorg.UserPools.Keys.Count + "\r\n" +
-                    "Address: " + RainBorg.botAddress + "\r\n" +
-                    "Payment ID: " + RainBorg.botPaymentId + "\r\n" +
+                    "Channels: " + RainBorg.UserPools.Keys.Count + "\r\n" +
                     "```";
                 await Context.Message.Author.SendMessageAsync(m);
             }
@@ -137,6 +133,45 @@ namespace RainBorg.Commands
                     }
                     catch { }
                 }
+                m += "```";
+                await Context.Message.Author.SendMessageAsync(m);
+            }
+        }
+
+        [Command("stats")]
+        public async Task StatsAsync([Remainder]ulong Id = 0)
+        {
+            if (RainBorg.Operators.Contains(Context.Message.Author.Id))
+            {
+                string m = "```";
+
+                // Channel stats
+                if (Stats.ChannelStats.ContainsKey(Id))
+                {
+                    m += "#" + Context.Client.GetChannel(Id) + " Channel Stats:\r\n";
+                    m += "Total TRTL Sent: " + String.Format("{0:n}", Stats.ChannelStats[Id].TotalAmount) + " TRTL\r\n";
+                    m += "Total Tips Sent: " + Stats.ChannelStats[Id].TotalTips + "\r\n";
+                    m += "Average Tip: " + Stats.ChannelStats[Id].TipAverage;
+                }
+
+                // User stats
+                else if (Stats.UserStats.ContainsKey(Id))
+                {
+                    m += "@" + Context.Client.GetUser(Id).Username + " User Stats:\r\n";
+                    m += "Total TRTL Sent: " + String.Format("{0:n}", Stats.UserStats[Id].TotalAmount) + " TRTL\r\n";
+                    m += "Total Tips Sent: " + Stats.UserStats[Id].TotalTips + "\r\n";
+                    m += "Average Tip: " + Stats.UserStats[Id].TipAverage;
+                }
+
+                // Global stats
+                else
+                {
+                    m += "Global Stats:\r\n";
+                    m += "Total TRTL Sent: " + String.Format("{0:n}", Stats.GlobalStats.TotalAmount) + " TRTL\r\n";
+                    m += "Total Tips Sent: " + Stats.GlobalStats.TotalTips + "\r\n";
+                    m += "Average Tip: " + Stats.GlobalStats.TipAverage;
+                }
+
                 m += "```";
                 await Context.Message.Author.SendMessageAsync(m);
             }

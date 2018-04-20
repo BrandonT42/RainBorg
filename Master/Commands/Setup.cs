@@ -212,7 +212,7 @@ namespace RainBorg.Commands
         }
 
         [Command("addoperator")]
-        public async Task AddOperatorAsync()
+        public async Task AddOperatorAsync([Remainder]string Remainder = null)
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
@@ -258,11 +258,11 @@ namespace RainBorg.Commands
         }
 
         [Command("removeoperator")]
-        public async Task RemoveOperatorAsync(params SocketUser[] users)
+        public async Task RemoveOperatorAsync([Remainder]string Remainder = null)
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
-                foreach (SocketUser user in users)
+                foreach (SocketUser user in Context.Message.MentionedUsers)
                     if (RainBorg.Operators.Contains(user.Id))
                     {
                         RainBorg.Operators.Remove(user.Id);

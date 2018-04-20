@@ -9,11 +9,11 @@ namespace RainBorg.Commands
     public partial class Commands : ModuleBase<SocketCommandContext>
     {
         [Command("exile")]
-        public async Task ExileAsync(params SocketUser[] users)
+        public async Task ExileAsync([Remainder]string Remainder = null)
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
-                foreach (SocketUser user in users)
+                foreach (SocketUser user in Context.Message.MentionedUsers)
                     if (!RainBorg.Blacklist.Contains(user.Id))
                     {
                         RainBorg.Blacklist.Add(user.Id);
@@ -59,11 +59,11 @@ namespace RainBorg.Commands
         }
 
         [Command("unexile")]
-        public async Task UnExileAsync(params SocketUser[] users)
+        public async Task UnExileAsync([Remainder]string Remainder = null)
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
-                foreach (SocketUser user in users)
+                foreach (SocketUser user in Context.Message.MentionedUsers)
                     if (RainBorg.Blacklist.Contains(user.Id))
                     {
                         RainBorg.Blacklist.Remove(user.Id);
@@ -107,11 +107,11 @@ namespace RainBorg.Commands
         }
 
         [Command("warn")]
-        public async Task WarnAsync(params SocketUser[] users)
+        public async Task WarnAsync([Remainder]string Remainder = null)
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
-                foreach (SocketUser user in users)
+                foreach (SocketUser user in Context.Message.MentionedUsers)
                     try
                     {
                         if (user != null && !RainBorg.Greylist.Contains(user.Id))
@@ -124,6 +124,37 @@ namespace RainBorg.Commands
                             RainBorg.Greylist.Add(user.Id);
                             await RainBorg.RemoveUserAsync(user, 0);
                             await user.SendMessageAsync("", false, builder);
+                        }
+                    }
+                    catch { }
+                try
+                {
+                    SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                    IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
+                    await Context.Message.AddReactionAsync(emote);
+                }
+                catch { }
+            }
+        }
+
+        [Command("warn")]
+        public async Task WarnAsync(params ulong[] users)
+        {
+            if (RainBorg.Operators.Contains(Context.Message.Author.Id))
+            {
+                foreach (ulong user in users)
+                    try
+                    {
+                        if (Context.Client.GetUser(user) != null && !RainBorg.Greylist.Contains(user))
+                        {
+                            EmbedBuilder builder = new EmbedBuilder();
+                            builder.WithColor(Color.Green);
+                            builder.WithTitle("SPAM WARNING");
+                            builder.Description = RainBorg.spamWarning;
+
+                            RainBorg.Greylist.Add(user);
+                            await RainBorg.RemoveUserAsync(Context.Client.GetUser(user), 0);
+                            await Context.Client.GetUser(user).SendMessageAsync("", false, builder);
                         }
                     }
                     catch { }
