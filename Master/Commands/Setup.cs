@@ -25,7 +25,7 @@ namespace RainBorg.Commands
                             await (Context.Client.GetChannel(Id) as SocketTextChannel).SendMessageAsync(RainBorg.entranceMessage);
                         try
                         {
-                            SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                            // Add reaction to message
                             IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                             await Context.Message.AddReactionAsync(emote);
                         }
@@ -52,7 +52,7 @@ namespace RainBorg.Commands
                             await (Context.Client.GetChannel(Channel.Id) as SocketTextChannel).SendMessageAsync(RainBorg.entranceMessage);
                         try
                         {
-                            SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                            // Add reaction to message
                             IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                             await Context.Message.AddReactionAsync(emote);
                         }
@@ -81,7 +81,7 @@ namespace RainBorg.Commands
                     catch { }
                 try
                 {
-                    SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                    // Add reaction to message
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
@@ -107,7 +107,7 @@ namespace RainBorg.Commands
                     catch { }
                 try
                 {
-                    SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                    // Add reaction to message
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
@@ -128,7 +128,7 @@ namespace RainBorg.Commands
                         await Config.Save();
                         try
                         {
-                            SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                            // Add reaction to message
                             IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                             await Context.Message.AddReactionAsync(emote);
                         }
@@ -152,7 +152,7 @@ namespace RainBorg.Commands
                         await Config.Save();
                         try
                         {
-                            SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                            // Add reaction to message
                             IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                             await Context.Message.AddReactionAsync(emote);
                         }
@@ -176,7 +176,7 @@ namespace RainBorg.Commands
                         await Config.Save();
                         try
                         {
-                            SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                            // Add reaction to message
                             IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                             await Context.Message.AddReactionAsync(emote);
                         }
@@ -200,7 +200,7 @@ namespace RainBorg.Commands
                         await Config.Save();
                         try
                         {
-                            SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                            // Add reaction to message
                             IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                             await Context.Message.AddReactionAsync(emote);
                         }
@@ -224,7 +224,7 @@ namespace RainBorg.Commands
                 await Config.Save();
                 try
                 {
-                    SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                    // Add reaction to message
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
@@ -249,7 +249,7 @@ namespace RainBorg.Commands
                 await Config.Save();
                 try
                 {
-                    SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                    // Add reaction to message
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
@@ -270,7 +270,7 @@ namespace RainBorg.Commands
                 await Config.Save();
                 try
                 {
-                    SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                    // Add reaction to message
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
@@ -295,7 +295,7 @@ namespace RainBorg.Commands
                 await Config.Save();
                 try
                 {
-                    SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                    // Add reaction to message
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }

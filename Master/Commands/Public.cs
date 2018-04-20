@@ -66,7 +66,7 @@ namespace RainBorg.Commands
                 await Config.Save();
                 try
                 {
-                    SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                    
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
@@ -85,7 +85,7 @@ namespace RainBorg.Commands
                 await Config.Save();
                 try
                 {
-                    SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                    
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }

@@ -23,7 +23,7 @@ namespace RainBorg.Commands
                 await ReplyAsync("Blacklisted users, they will receive no tips.");
                 try
                 {
-                    SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                    
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
@@ -50,7 +50,7 @@ namespace RainBorg.Commands
                 await ReplyAsync("Blacklisted users, they will receive no tips.");
                 try
                 {
-                    SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                    
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
@@ -72,7 +72,7 @@ namespace RainBorg.Commands
                 await ReplyAsync("Removed users from blacklist, they may receive tips again.");
                 try
                 {
-                    SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                    
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
@@ -98,7 +98,7 @@ namespace RainBorg.Commands
                 await ReplyAsync("Removed users from blacklist, they may receive tips again.");
                 try
                 {
-                    SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                    
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
@@ -129,7 +129,7 @@ namespace RainBorg.Commands
                     catch { }
                 try
                 {
-                    SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                    
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
@@ -160,7 +160,7 @@ namespace RainBorg.Commands
                     catch { }
                 try
                 {
-                    SocketGuildChannel guild = Context.Message.Channel as SocketGuildChannel;
+                    
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
