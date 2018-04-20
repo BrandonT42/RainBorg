@@ -104,7 +104,6 @@ namespace RainBorg
                 {
                     Console.WriteLine("{0} {1}    Relaunching bot...", DateTime.Now.ToString("HH:mm:ss"), "RainBorg");
                     Paused = true;
-                    // Clone user messages to prevent crashing
                     JObject Resuming = new JObject
                     {
                         ["userPools"] = JToken.FromObject(UserPools),
@@ -188,7 +187,7 @@ namespace RainBorg
                 {
                     ["userPools"] = JToken.FromObject(UserPools),
                     ["greylist"] = JToken.FromObject(Greylist),
-                    ["userMessages"] = JToken.FromObject(UserMessages)
+                    ["userMessages"] = JObject.FromObject(UserMessages)
                 };
                 File.WriteAllText(Constants.ResumeFile, Resuming.ToString());
                 Process.Start("RelaunchUtility.exe", "RainBorg.exe");
