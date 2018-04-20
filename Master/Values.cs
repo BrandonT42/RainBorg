@@ -18,7 +18,7 @@ namespace RainBorg
             _timezone = TimeZone.CurrentTimeZone.StandardName,
             botAddress = "TRTLv12WtKJAzTNtxSkbcXf7mjeVApSqRYACtoJE2X52UBSce7qGAQ1JQgG3MmArnZSbkJXKqBXiPX2Mno7xD4tqD3p8SySoBc5",
             botPaymentId = "bca975edfe710a64337beb1685f32ab900989aa9767946efd8537f09db594bbd",
-            successReact = "heavy_check_mark",
+            successReact = "kthx",
             waitNext = "";
 
         public static double
@@ -47,8 +47,8 @@ namespace RainBorg
         public static Dictionary<ulong, List<ulong>>
             UserPools = new Dictionary<ulong, List<ulong>>();
 
-        public static Dictionary<ulong, SocketMessage>
-            UserMessages = new Dictionary<ulong, SocketMessage>();
+        public static Dictionary<ulong, UserMessage>
+            UserMessages = new Dictionary<ulong, UserMessage>();
 
         public static List<ulong>
             ChannelWeight = new List<ulong>(),
@@ -97,5 +97,18 @@ namespace RainBorg
         private delegate bool ConsoleEventDelegate(int eventType);
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool SetConsoleCtrlHandler(ConsoleEventDelegate callback, bool add);
+    }
+
+    // Utility class for serialization of message log on restart
+    public class UserMessage
+    {
+        public DateTimeOffset CreatedAt;
+        public string Content;
+        public UserMessage(SocketMessage Message)
+        {
+            CreatedAt = Message.CreatedAt;
+            Content = Message.Content;
+        }
+        public UserMessage() { }
     }
 }

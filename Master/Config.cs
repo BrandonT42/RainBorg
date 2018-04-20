@@ -10,9 +10,7 @@ namespace RainBorg
         public static async Task Load()
         {
             // Check if config file exists and create it if it doesn't
-            if (!File.Exists(Constants.Config))
-                await Save();
-            else
+            if (File.Exists(Constants.Config))
             {
                 // Load values
                 JObject Config = JObject.Parse(File.ReadAllText(Constants.Config));
@@ -35,6 +33,7 @@ namespace RainBorg
                     if (!RainBorg.UserPools.ContainsKey(Id))
                         RainBorg.UserPools.Add(Id, new List<ulong>());
             }
+            else await Save();
         }
 
         public static Task Save()

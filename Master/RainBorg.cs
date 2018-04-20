@@ -24,12 +24,14 @@ namespace RainBorg
             Console.WriteLine(Banner);
 
             // Resume if told to
-            if (args.Length > 0 && args[0] == "true")
+            if (File.Exists(Constants.ResumeFile))
             {
                 Console.WriteLine("{0} {1}    Resuming bot...", DateTime.Now.ToString("HH:mm:ss"), "RainBorg");
                 JObject Resuming = JObject.Parse(File.ReadAllText(Constants.ResumeFile));
                 UserPools = Resuming["userPools"].ToObject<Dictionary<ulong, List<ulong>>>();
                 Greylist = Resuming["greylist"].ToObject<List<ulong>>();
+                UserMessages = Resuming["userMessages"].ToObject<Dictionary<ulong, UserMessage>>();
+                File.Delete(Constants.ResumeFile);
             }
 
             // Create exit handler
@@ -98,6 +100,22 @@ namespace RainBorg
                         Operators.Remove(ulong.Parse(command.Substring(command.IndexOf(' '))));
                     Console.WriteLine("Removed operator.");
                 }
+                else if (command.ToLower().StartsWith("restart"))
+                {
+                    Console.WriteLine("{0} {1}    Relaunching bot...", DateTime.Now.ToString("HH:mm:ss"), "RainBorg");
+                    Paused = true;
+                    // Clone user messages to prevent crashing
+                    JObject Resuming = new JObject
+                    {
+                        ["userPools"] = JToken.FromObject(UserPools),
+                        ["greylist"] = JToken.FromObject(Greylist),
+                        ["userMessages"] = JObject.FromObject(UserMessages)
+                    };
+                    File.WriteAllText(Constants.ResumeFile, Resuming.ToString());
+                    Process.Start("RelaunchUtility.exe", "RainBorg.exe");
+                    ConsoleEventCallback(2);
+                    Environment.Exit(0);
+                }
             }
 
             // Completed, exit bot
@@ -165,13 +183,16 @@ namespace RainBorg
             if (arg.Message.Contains("Disconnected"))
             {
                 Console.WriteLine("{0} {1}    Relaunching bot...", DateTime.Now.ToString("HH:mm:ss"), "RainBorg");
+                Paused = true;
                 JObject Resuming = new JObject
                 {
                     ["userPools"] = JToken.FromObject(UserPools),
-                    ["greylist"] = JToken.FromObject(Greylist)
+                    ["greylist"] = JToken.FromObject(Greylist),
+                    ["userMessages"] = JToken.FromObject(UserMessages)
                 };
                 File.WriteAllText(Constants.ResumeFile, Resuming.ToString());
                 Process.Start("RelaunchUtility.exe", "RainBorg.exe");
+                ConsoleEventCallback(2);
                 Environment.Exit(0);
             }
 
@@ -415,6 +436,9 @@ namespace RainBorg
         {
             while (true)
             {
+                // Do not run loop while paused
+                while (Paused) { }
+
                 if (logLevel >= 3)
                     Console.WriteLine("{0} {1}     Running timeout loop", DateTime.Now.ToString("HH:mm:ss"), "Timeout");
 

@@ -79,9 +79,7 @@ namespace RainBorg
         public static async Task Load()
         {
             // Create stat sheet if it doesn't exist
-            if (!File.Exists(Constants.StatSheet))
-                await Update();
-            else
+            if (File.Exists(Constants.StatSheet))
             {
                 // Load values
                 JObject StatSheet = JObject.Parse(File.ReadAllText(Constants.StatSheet));
@@ -89,6 +87,7 @@ namespace RainBorg
                 ChannelStats = StatSheet["channelStats"].ToObject<Dictionary<ulong, StatTracker>>();
                 UserStats = StatSheet["userStats"].ToObject<Dictionary<ulong, StatTracker>>();
             }
+            else await Update();
         }
 
         // Flush updates to stat sheet
