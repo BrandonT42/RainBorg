@@ -168,14 +168,14 @@ namespace RainBorg.Commands
         }
 
         [Command("exit")]
-        public async Task ExitAsync([Remainder]string Remainder = null)
+        public Task ExitAsync([Remainder]string Remainder = null)
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
-                await Config.Save();
                 RainBorg.ConsoleEventCallback(2);
                 Environment.Exit(0);
             }
+            return Task.CompletedTask;
         }
     }
 }
