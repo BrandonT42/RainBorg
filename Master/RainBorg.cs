@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading;
@@ -35,6 +36,12 @@ namespace RainBorg
             new Thread(delegate ()
             {
                 new RainBorg().RunBotAsync().GetAwaiter().GetResult();
+            }).Start();
+
+            // Begin timeout loop in its own thread
+            new Thread(delegate ()
+            {
+                UserTimeout();
             }).Start();
 
             // Get console commands
@@ -102,8 +109,12 @@ namespace RainBorg
             _client.Ready += Ready;
 
             // Load local files
+            Console.WriteLine("{0} {1}    Loading config", DateTime.Now.ToString("HH:mm:ss"), "RainBorg");
             await Config.Load();
+            Console.WriteLine("{0} {1}    Loadied config", DateTime.Now.ToString("HH:mm:ss"), "RainBorg");
+            Console.WriteLine("{0} {1}    Loading stats", DateTime.Now.ToString("HH:mm:ss"), "RainBorg");
             await Stats.Load();
+            Console.WriteLine("{0} {1}    Loaded stats", DateTime.Now.ToString("HH:mm:ss"), "RainBorg");
 
             // Register commands and start bot
             await RegisterCommandsAsync();
@@ -146,12 +157,12 @@ namespace RainBorg
         // Register commands within API
         private async Task RegisterCommandsAsync()
         {
-            _client.MessageReceived += HandleCommandAsync;
+            _client.MessageReceived += MessageReceivedAsync;
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
         }
 
         // Message received
-        private async Task HandleCommandAsync(SocketMessage arg)
+        private async Task MessageReceivedAsync(SocketMessage arg)
         {
             // Get message and create a context
             var message = arg as SocketUserMessage;
@@ -372,6 +383,47 @@ namespace RainBorg
                 }
             }
             return Output;
+        }
+
+        // Remove expired users from userpools
+        private static async Task UserTimeout()
+        {
+            while (true)
+            {
+                if (logLevel >= 3)
+                    Console.WriteLine("{0} {1}     Running timeout loop", DateTime.Now.ToString("HH:mm:ss"), "Timeout");
+
+                // Clone pools to iterate through (CPU-friendly work-around)
+                Dictionary<ulong, List<ulong>> Temp = new Dictionary<ulong, List<ulong>>();
+                foreach (KeyValuePair<ulong, List<ulong>> Pool in UserPools)
+                    Temp.Add(Pool.Key, Pool.Value);
+
+                // Iterate over all channel pools
+                foreach (KeyValuePair<ulong, List<ulong>> Pool in Temp)
+                {
+                    // Iterate over users within pool
+                    for (int i = 0; i < Pool.Value.Count; i++)
+                    {
+                        // Check if their last message was created beyond the timeout period
+                        if ((DateTime.Now.ToUniversalTime() - DateTime.MinValue.ToUniversalTime()).TotalMilliseconds >= timeoutPeriod +
+                            (UserMessages[Pool.Value[i]].CreatedAt.ToUniversalTime() - DateTime.MinValue.ToUniversalTime()).TotalMilliseconds)
+                        {
+                            if (logLevel >= 3)
+                                Console.WriteLine("{0} {1}     Checking {2} against {3} on channel #{4}", DateTime.Now.ToString("HH:mm:ss"), "Timeout",
+                                    (UserMessages[Pool.Value[i]].CreatedAt - DateTime.MinValue).TotalMilliseconds, (DateTime.Now - DateTime.MinValue).TotalMilliseconds, _client.GetChannel(Pool.Key));
+
+                            // Remove user from channel's pool
+                            if (logLevel >= 1)
+                                Console.WriteLine("{0} {1}     Removed {2} ({3}) from user pool on channel #{4}", DateTime.Now.ToString("HH:mm:ss"), "Timeout",
+                                    _client.GetUser(Pool.Value[i]), Pool.Value[i], _client.GetChannel(Pool.Key));
+                            await RemoveUserAsync(_client.GetUser(Pool.Value[i]), Pool.Key);
+                        }
+                    }
+                }
+
+                // Wait
+                await Task.Delay(1);
+            }
         }
 
         // Remove a user from all user pools
