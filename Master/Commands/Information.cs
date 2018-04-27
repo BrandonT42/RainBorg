@@ -26,21 +26,22 @@ namespace RainBorg.Commands
                 double i = RainBorg.tipMin + RainBorg.tipFee - RainBorg.tipBalance;
                 if (i < 0) i = 0;
 
-                string m = "```Current tip balance: " + String.Format("{0:n}", RainBorg.tipBalance) + " TRTL\r\n" +
-                    "Amount needed for next tip: " + String.Format("{0:n}", i) + " TRTL\r\n" +
-                    "Next tip at: " + RainBorg.waitNext + "\r\n" +
-                    "Tip minimum: " + String.Format("{0:n}", RainBorg.tipMin) + " TRTL\r\n" +
-                    "Tip maximum: " + String.Format("{0:n}", RainBorg.tipMax) + " TRTL\r\n" +
-                    "Minimum users: " + RainBorg.userMin + "\r\n" +
-                    "Maximum users: " + RainBorg.userMax + "\r\n" +
-                    "Minimum wait time: " + String.Format("{0:n0}", RainBorg.waitMin) + "ms (" + TimeSpan.FromMilliseconds(RainBorg.waitMin).ToString() + ")\r\n" +
-                    "Maximum wait time: " + String.Format("{0:n0}", RainBorg.waitMax) + "ms (" + TimeSpan.FromMilliseconds(RainBorg.waitMax).ToString() + ")\r\n" +
-                    "Message timeout: " + String.Format("{0:n0}", RainBorg.timeoutPeriod) + "ms (" + TimeSpan.FromMilliseconds(RainBorg.timeoutPeriod).ToString() + ")\r\n" +
-                    "Minimum account age: " + TimeSpan.FromHours(RainBorg.accountAge).ToString() + "\r\n" +
-                    "Operators: " + RainBorg.Operators.Count + "\r\n" +
-                    "Blacklisted: " + RainBorg.Blacklist.Count + "\r\n" +
-                    "Greylisted: " + RainBorg.Greylist.Count + "\r\n" +
-                    "Channels: " + RainBorg.UserPools.Keys.Count + "\r\n" +
+                string m = "```Current tip balance: " + String.Format("{0:n}", RainBorg.tipBalance) + " TRTL\n" +
+                    "Amount needed for next tip: " + String.Format("{0:n}", i) + " TRTL\n" +
+                    "Next tip at: " + RainBorg.waitNext + "\n" +
+                    "Tip minimum: " + String.Format("{0:n}", RainBorg.tipMin) + " TRTL\n" +
+                    "Tip maximum: " + String.Format("{0:n}", RainBorg.tipMax) + " TRTL\n" +
+                    "Minimum users: " + RainBorg.userMin + "\n" +
+                    "Maximum users: " + RainBorg.userMax + "\n" +
+                    "Minimum wait time: " + String.Format("{0:n0}", RainBorg.waitMin) + "s (" + TimeSpan.FromSeconds(RainBorg.waitMin).ToString() + ")\n" +
+                    "Maximum wait time: " + String.Format("{0:n0}", RainBorg.waitMax) + "s (" + TimeSpan.FromSeconds(RainBorg.waitMax).ToString() + ")\n" +
+                    "Message timeout: " + String.Format("{0:n0}", RainBorg.timeoutPeriod) + "s (" + TimeSpan.FromSeconds(RainBorg.timeoutPeriod).ToString() + ")\n" +
+                    "Minimum account age: " + TimeSpan.FromHours(RainBorg.accountAge).ToString() + "\n" +
+                    "Operators: " + RainBorg.Operators.Count + "\n" +
+                    "Blacklisted: " + RainBorg.Blacklist.Count + "\n" +
+                    "Greylisted: " + RainBorg.Greylist.Count + "\n" +
+                    "Channels: " + RainBorg.UserPools.Keys.Count + "\n" +
+                    "Paused: " + RainBorg.Paused.ToString() +
                     "```";
                 await Context.Message.Author.SendMessageAsync(m);
             }
@@ -51,11 +52,11 @@ namespace RainBorg.Commands
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
-                string m = "```Operators:\r\n";
+                string m = "```Operators:\n";
                 foreach (ulong i in RainBorg.Operators)
                     try
                     {
-                        m += Context.Client.GetUser(i).Username + "\r\n";
+                        m += Context.Client.GetUser(i).Username + "\n";
                     }
                     catch { }
                 m += "```";
@@ -68,20 +69,32 @@ namespace RainBorg.Commands
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
-                string m = "```Blacklisted Users:\r\n";
-                foreach (ulong i in RainBorg.Blacklist)
+                string m = "```Blacklisted Users:\n";
+                foreach (KeyValuePair<ulong, string> i in RainBorg.Blacklist)
                     try
                     {
-                        m += Context.Client.GetUser(i).Username + " (" + i + ")\r\n";
+                        m += Context.Client.GetUser(i.Key).Username + " (" + i.Key + ")";
+                        if (i.Value != "")
+                            m += " - " + i.Value;
+                        m += "\n";
                     }
-                    catch { }
-                m += "\r\nGreylisted Users:\r\n";
+                    catch
+                    {
+                        m += "User Not Found (" + i.Key + ")";
+                        if (i.Value != "")
+                            m += " - " + i.Value;
+                        m += "\n";
+                    }
+                m += "\nGreylisted Users:\n";
                 foreach (ulong i in RainBorg.Greylist)
                     try
                     {
-                        m += Context.Client.GetUser(i).Username + " (" + i + ")\r\n";
+                        m += Context.Client.GetUser(i).Username + " (" + i + ")\n";
                     }
-                    catch { }
+                    catch
+                    {
+                        m += i + "\n";
+                    }
                 m += "```";
                 await Context.Message.Author.SendMessageAsync(m);
             }
@@ -92,15 +105,15 @@ namespace RainBorg.Commands
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
-                string m = "```Current User Pools:\r\n";
+                string m = "```Current User Pools:\n";
                 foreach (KeyValuePair<ulong, List<ulong>> entry in RainBorg.UserPools)
                     try
                     {
-                        m += "#" + Context.Client.GetChannel(entry.Key) + " (" + entry.Key + ") :\r\n";
+                        m += "#" + Context.Client.GetChannel(entry.Key) + " (" + entry.Key + ") :\n";
 
                         List<ulong> v = entry.Value;
-                        foreach (ulong s in v) m += Context.Client.GetUser(s).Username + " (" + s + ")\r\n";
-                        m += "\r\n\r\n";
+                        foreach (ulong s in v) m += Context.Client.GetUser(s).Username + " (" + s + ")\n";
+                        m += "\n\n";
                     }
                     catch { }
                 m += "```";
@@ -113,7 +126,7 @@ namespace RainBorg.Commands
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
-                string m = "```Tippable Channels:\r\n";
+                string m = "```Tippable Channels:\n";
                 foreach (KeyValuePair<ulong, List<ulong>> entry in RainBorg.UserPools)
                     try
                     {
@@ -123,7 +136,7 @@ namespace RainBorg.Commands
                         foreach (var channel in x)
                             if (channel.Key == entry.Key) m += channel.Count();
 
-                        m += "\r\n";
+                        m += "\n";
                     }
                     catch { }
                 m += "```";
@@ -141,27 +154,27 @@ namespace RainBorg.Commands
                 // Channel stats
                 if (Stats.ChannelStats.ContainsKey(Id))
                 {
-                    m += "#" + Context.Client.GetChannel(Id) + " Channel Stats:\r\n";
-                    m += "Total TRTL Sent: " + String.Format("{0:n}", Stats.ChannelStats[Id].TotalAmount) + " TRTL\r\n";
-                    m += "Total Tips Sent: " + Stats.ChannelStats[Id].TotalTips + "\r\n";
+                    m += "#" + Context.Client.GetChannel(Id) + " Channel Stats:\n";
+                    m += "Total TRTL Sent: " + String.Format("{0:n}", Stats.ChannelStats[Id].TotalAmount) + " TRTL\n";
+                    m += "Total Tips Sent: " + Stats.ChannelStats[Id].TotalTips + "\n";
                     m += "Average Tip: " + String.Format("{0:n}", Stats.ChannelStats[Id].TipAverage) + " TRTL";
                 }
 
                 // User stats
                 else if (Stats.UserStats.ContainsKey(Id))
                 {
-                    m += "@" + Context.Client.GetUser(Id).Username + " User Stats:\r\n";
-                    m += "Total TRTL Sent: " + String.Format("{0:n}", Stats.UserStats[Id].TotalAmount) + " TRTL\r\n";
-                    m += "Total Tips Sent: " + Stats.UserStats[Id].TotalTips + "\r\n";
+                    m += "@" + Context.Client.GetUser(Id).Username + " User Stats:\n";
+                    m += "Total TRTL Sent: " + String.Format("{0:n}", Stats.UserStats[Id].TotalAmount) + " TRTL\n";
+                    m += "Total Tips Sent: " + Stats.UserStats[Id].TotalTips + "\n";
                     m += "Average Tip: " + String.Format("{0:n}", Stats.UserStats[Id].TipAverage) + " TRTL";
                 }
 
                 // Global stats
                 else
                 {
-                    m += "Global Stats:\r\n";
-                    m += "Total TRTL Sent: " + String.Format("{0:n}", Stats.GlobalStats.TotalAmount) + " TRTL\r\n";
-                    m += "Total Tips Sent: " + Stats.GlobalStats.TotalTips + "\r\n";
+                    m += "Global Stats:\n";
+                    m += "Total TRTL Sent: " + String.Format("{0:n}", Stats.GlobalStats.TotalAmount) + " TRTL\n";
+                    m += "Total Tips Sent: " + Stats.GlobalStats.TotalTips + "\n";
                     m += "Average Tip: " + String.Format("{0:n}", Stats.GlobalStats.TipAverage) + " TRTL";
                 }
 

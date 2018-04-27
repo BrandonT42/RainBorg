@@ -32,27 +32,27 @@ namespace RainBorg.Commands
         [Command("donate")]
         public async Task DonateAsync([Remainder]string Remainder = null)
         {
-            string m = "Want to donate to keep the rain a-pouring? What a great turtle you are! :)\r\n\r\n";
-            m += "To donate, simply send some TRTL to the following address, REMEMBER to use the provided payment ID, or else your funds will NOT reach the tip pool.\r\n";
-            m += "```Address:\r\n" + RainBorg.botAddress + "\r\n";
-            m += "Payment ID (INCLUDE THIS):\r\n" + RainBorg.botPaymentId + "```";
+            string m = "Want to donate to keep the rain a-pouring? What a great turtle you are! :)\n\n";
+            m += "To donate, simply send some TRTL to the following address, REMEMBER to use the provided payment ID, or else your funds will NOT reach the tip pool.\n";
+            m += "```Address:\n" + RainBorg.botAddress + "\n";
+            m += "Payment ID (INCLUDE THIS):\n" + RainBorg.botPaymentId + "```";
             await Context.Message.Author.SendMessageAsync(m);
         }
 
         [Command("help")]
         public async Task HelpAsync([Remainder]string Remainder = null)
         {
-            string m = "```List of Commands:\r\n";
-            m += "$balance - Check the bot's tip balance\r\n";
-            m += "$donate - Learn how you can donate to the tip pool\r\n";
-            m += "$optout - Opt out of receiving tips from the bot\r\n";
+            string m = "```List of Commands:\n";
+            m += "$balance - Check the bot's tip balance\n";
+            m += "$donate - Learn how you can donate to the tip pool\n";
+            m += "$optout - Opt out of receiving tips from the bot\n";
             m += "$optin - Opt back into receiving tips from the bot```";
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
-                m += "Op-only message:\r\nOperator-only command documentation can be found at:\r\n";
-                m += "https://github.com/BrandonT42/RainBorg/wiki/Operator-Commands\r\n";
+                m += "Op-only message:\nOperator-only command documentation can be found at:\n";
+                m += "https://github.com/BrandonT42/RainBorg/wiki/Operator-Commands\n";
             }
-            m += "Need more help? Check the wiki link below to learn how to be a part of the rain:\r\n" + RainBorg.wikiURL;
+            m += "Need more help? Check the wiki link below to learn how to be a part of the rain:\n" + RainBorg.wikiURL;
             await Context.Message.Author.SendMessageAsync(m);
         }
 
@@ -70,7 +70,10 @@ namespace RainBorg.Commands
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
-                catch { }
+                catch
+                {
+                    await Context.Message.AddReactionAsync(new Emoji("👌"));
+                }
                 await Context.Message.Author.SendMessageAsync("You have opted out from receiving future tips.");
             }
             else await Context.Message.Author.SendMessageAsync("You have already opted out, use $optin to opt back into receiving tips.");
@@ -89,7 +92,10 @@ namespace RainBorg.Commands
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
-                catch { }
+                catch
+                {
+                    await Context.Message.AddReactionAsync(new Emoji("👌"));
+                }
                 await Context.Message.Author.SendMessageAsync("You have opted back in, and will receive tips once again.");
             }
             else await Context.Message.Author.SendMessageAsync("You have not opted out, you are already able to receive tips.");

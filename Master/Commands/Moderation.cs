@@ -9,16 +9,15 @@ namespace RainBorg.Commands
     public partial class Commands : ModuleBase<SocketCommandContext>
     {
         [Command("exile")]
-        public async Task ExileAsync([Remainder]string Remainder = null)
+        public async Task ExileAsync(SocketUser user, [Remainder]string Remainder = "")
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
-                foreach (SocketUser user in Context.Message.MentionedUsers)
-                    if (!RainBorg.Blacklist.Contains(user.Id))
-                    {
-                        RainBorg.Blacklist.Add(user.Id);
-                        await RainBorg.RemoveUserAsync(user, 0);
-                    }
+                if (!RainBorg.Blacklist.ContainsKey(user.Id))
+                {
+                    RainBorg.Blacklist.Add(user.Id, Remainder);
+                    await RainBorg.RemoveUserAsync(user, 0);
+                }
                 await Config.Save();
                 await ReplyAsync("Blacklisted users, they will receive no tips.");
                 try
@@ -27,25 +26,27 @@ namespace RainBorg.Commands
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
-                catch { }
+                catch
+                {
+                    await Context.Message.AddReactionAsync(new Emoji("👌"));
+                }
             }
         }
 
         [Command("exile")]
-        public async Task ExileAsync(params ulong[] users)
+        public async Task ExileAsync(ulong user, [Remainder]string Remainder = "")
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
-                foreach (ulong user in users)
-                    try
+                try
+                {
+                    if (!RainBorg.Blacklist.ContainsKey(Context.Client.GetUser(user).Id))
                     {
-                        if (!RainBorg.Blacklist.Contains(Context.Client.GetUser(user).Id))
-                        {
-                            RainBorg.Blacklist.Add(Context.Client.GetUser(user).Id);
-                            await RainBorg.RemoveUserAsync(Context.Client.GetUser(user), 0);
-                        }
+                        RainBorg.Blacklist.Add(Context.Client.GetUser(user).Id, Remainder);
+                        await RainBorg.RemoveUserAsync(Context.Client.GetUser(user), 0);
                     }
-                    catch { }
+                }
+                catch { }
                 await Config.Save();
                 await ReplyAsync("Blacklisted users, they will receive no tips.");
                 try
@@ -54,18 +55,20 @@ namespace RainBorg.Commands
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
-                catch { }
+                catch
+                {
+                    await Context.Message.AddReactionAsync(new Emoji("👌"));
+                }
             }
         }
 
         [Command("unexile")]
-        public async Task UnExileAsync([Remainder]string Remainder = null)
+        public async Task UnExileAsync(SocketUser user, [Remainder]string Remainder = null)
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
-                foreach (SocketUser user in Context.Message.MentionedUsers)
-                    if (RainBorg.Blacklist.Contains(user.Id))
-                        RainBorg.Blacklist.Remove(user.Id);
+                if (RainBorg.Blacklist.ContainsKey(user.Id))
+                    RainBorg.Blacklist.Remove(user.Id);
                 await Config.Save();
                 await ReplyAsync("Removed users from blacklist, they may receive tips again.");
                 try
@@ -74,22 +77,24 @@ namespace RainBorg.Commands
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
-                catch { }
+                catch
+                {
+                    await Context.Message.AddReactionAsync(new Emoji("👌"));
+                }
             }
         }
 
         [Command("unexile")]
-        public async Task UnExileAsync(params ulong[] users)
+        public async Task UnExileAsync(ulong user)
         {
             if (RainBorg.Operators.Contains(Context.Message.Author.Id))
             {
-                foreach (ulong user in users)
-                    try
-                    {
-                        if (RainBorg.Blacklist.Contains(Context.Client.GetUser(user).Id))
-                            RainBorg.Blacklist.Remove(Context.Client.GetUser(user).Id);
-                    }
-                    catch { }
+                try
+                {
+                    if (RainBorg.Blacklist.ContainsKey(Context.Client.GetUser(user).Id))
+                        RainBorg.Blacklist.Remove(Context.Client.GetUser(user).Id);
+                }
+                catch { }
                 await Config.Save();
                 await ReplyAsync("Removed users from blacklist, they may receive tips again.");
                 try
@@ -98,7 +103,10 @@ namespace RainBorg.Commands
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
-                catch { }
+                catch
+                {
+                    await Context.Message.AddReactionAsync(new Emoji("👌"));
+                }
             }
         }
 
@@ -125,7 +133,10 @@ namespace RainBorg.Commands
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
-                catch { }
+                catch
+                {
+                    await Context.Message.AddReactionAsync(new Emoji("👌"));
+                }
             }
         }
 
@@ -156,7 +167,10 @@ namespace RainBorg.Commands
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
-                catch { }
+                catch
+                {
+                    await Context.Message.AddReactionAsync(new Emoji("👌"));
+                }
             }
         }
     }

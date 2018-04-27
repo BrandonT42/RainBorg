@@ -21,7 +21,10 @@ namespace RainBorg.Commands
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
-                catch { }
+                catch
+                {
+                    await Context.Message.AddReactionAsync(new Emoji("👌"));
+                }
             }
         }
 
@@ -38,7 +41,10 @@ namespace RainBorg.Commands
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
-                catch { }
+                catch
+                {
+                    await Context.Message.AddReactionAsync(new Emoji("👌"));
+                }
             }
         }
 
@@ -55,7 +61,10 @@ namespace RainBorg.Commands
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
-                catch { }
+                catch
+                {
+                    await Context.Message.AddReactionAsync(new Emoji("👌"));
+                }
             }
         }
 
@@ -72,7 +81,10 @@ namespace RainBorg.Commands
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
-                catch { }
+                catch
+                {
+                    await Context.Message.AddReactionAsync(new Emoji("👌"));
+                }
             }
         }
 
@@ -89,7 +101,10 @@ namespace RainBorg.Commands
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
-                catch { }
+                catch
+                {
+                    await Context.Message.AddReactionAsync(new Emoji("👌"));
+                }
             }
         }
 
@@ -106,7 +121,10 @@ namespace RainBorg.Commands
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
-                catch { }
+                catch
+                {
+                    await Context.Message.AddReactionAsync(new Emoji("👌"));
+                }
             }
         }
 
@@ -123,7 +141,10 @@ namespace RainBorg.Commands
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
-                catch { }
+                catch
+                {
+                    await Context.Message.AddReactionAsync(new Emoji("👌"));
+                }
             }
         }
 
@@ -140,7 +161,10 @@ namespace RainBorg.Commands
                     IEmote emote = Context.Guild.Emotes.First(e => e.Name == RainBorg.successReact);
                     await Context.Message.AddReactionAsync(emote);
                 }
-                catch { }
+                catch
+                {
+                    await Context.Message.AddReactionAsync(new Emoji("👌"));
+                }
             }
         }
     }
