@@ -1,5 +1,6 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -31,22 +32,32 @@ namespace RainBorg
         public static int
             userMin = 1,
             userMax = 20,
-            waitMin = 1 * 60 * 1000,
-            waitMax = 1 * 60 * 1000,
+            logLevel = 1,
+
+            waitMin = 1 * 60,
+            waitMax = 1 * 60,
             waitTime = 1,
+
             accountAge = 3,
-            timeoutPeriod = 30000,
-            logLevel = 1;
+
+            timeoutPeriod = 30;
 
         public static List<ulong>
             Operators = new List<ulong>(),
-            Blacklist = new List<ulong>(),
-            Greylist = new List<ulong>(),
             OptedOut = new List<ulong>();
 
+        [JsonExtensionData]
+        public static List<ulong>
+            Greylist = new List<ulong>();
+
+        public static Dictionary<ulong, string>
+            Blacklist = new Dictionary<ulong, string>();
+
+        [JsonExtensionData]
         public static Dictionary<ulong, List<ulong>>
             UserPools = new Dictionary<ulong, List<ulong>>();
 
+        [JsonExtensionData]
         public static Dictionary<ulong, UserMessage>
             UserMessages = new Dictionary<ulong, UserMessage>();
 
@@ -55,13 +66,13 @@ namespace RainBorg
             StatusChannel = new List<ulong>();
 
         public static string
-            tipBalanceError = "My tip balance was too low to send out a tip, consider donating {0} TRTL to keep the rain a-pouring!\r\n\r\n" +
-                "To donate, simply send some TRTL to the following address, REMEMBER to use the provided payment ID, or else your funds will NOT reach the tip pool.\r\n" +
-                "```Address:\r\n" + botAddress + "\r\n" + "Payment ID (INCLUDE THIS):\r\n" + botPaymentId + "```",
+            tipBalanceError = "My tip balance was too low to send out a tip, consider donating {0} TRTL to keep the rain a-pouring!\n\n" +
+                "To donate, simply send some TRTL to the following address, REMEMBER to use the provided payment ID, or else your funds will NOT reach the tip pool.\n" +
+                "```Address:\n" + botAddress + "\n" + "Payment ID (INCLUDE THIS):\n" + botPaymentId + "```",
             entranceMessage = "",
             exitMessage = "",
             wikiURL = "https://github.com/Sajo811/turtlewiki/wiki/RainBorg-Wat-Dat",
-            spamWarning = "You've been issued a spam warning, this means you won't be included in my next tip. Try to be a better turtle, okay? ;) Consider reading up on how to be a good turtle:\r\nhttps://medium.com/@turtlecoin/how-to-be-a-good-turtle-20a427028a18";
+            spamWarning = "You've been issued a spam warning, this means you won't be included in my next tip. Try to be a better turtle, okay? ;) Consider reading up on how to be a good turtle:\nhttps://medium.com/@turtlecoin/how-to-be-a-good-turtle-20a427028a18";
 
         private static List<string>
             RaindanceImages = new List<string>
@@ -77,12 +88,12 @@ namespace RainBorg
 
         private static string
             Banner =
-            "\r\n" +
-            " ██████         ███      █████████   ███      ███   ██████         ███      ██████         ██████   \r\n" +
-            " ███   ███   ███   ███      ███      ██████   ███   ███   ███   ███   ███   ███   ███   ███      ███\r\n" +
-            " ███   ███   ███   ███      ███      ██████   ███   ██████      ███   ███   ███   ███   ███         \r\n" +
-            " ██████      █████████      ███      ███   ██████   ███   ███   ███   ███   ██████      ███   ██████\r\n" +
-            " ███   ███   ███   ███      ███      ███   ██████   ███   ███   ███   ███   ███   ███   ███      ███\r\n" +
+            "\n" +
+            " ██████         ███      █████████   ███      ███   ██████         ███      ██████         ██████   \n" +
+            " ███   ███   ███   ███      ███      ██████   ███   ███   ███   ███   ███   ███   ███   ███      ███\n" +
+            " ███   ███   ███   ███      ███      ██████   ███   ██████      ███   ███   ███   ███   ███         \n" +
+            " ██████      █████████      ███      ███   ██████   ███   ███   ███   ███   ██████      ███   ██████\n" +
+            " ███   ███   ███   ███      ███      ███   ██████   ███   ███   ███   ███   ███   ███   ███      ███\n" +
             " ███   ███   ███   ███   █████████   ███      ███   ██████         ███      ███   ███      ██████    v" + _version;
 
         public static double

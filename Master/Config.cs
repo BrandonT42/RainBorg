@@ -25,7 +25,7 @@ namespace RainBorg
                 RainBorg.timeoutPeriod = (int)Config["timeoutPeriod"];
                 RainBorg.logLevel = (int)Config["logLevel"];
                 RainBorg.Operators = Config["operators"].ToObject<List<ulong>>();
-                RainBorg.Blacklist = Config["blacklist"].ToObject<List<ulong>>();
+                RainBorg.Blacklist = Config["blacklist"].ToObject<Dictionary<ulong, string>>();
                 RainBorg.OptedOut = Config["optedOut"].ToObject<List<ulong>>();
                 RainBorg.ChannelWeight = Config["channelWeight"].ToObject<List<ulong>>();
                 RainBorg.StatusChannel = Config["statusChannel"].ToObject<List<ulong>>();

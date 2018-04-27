@@ -23,17 +23,6 @@ namespace RainBorg
             // Vanity
             Console.WriteLine(Banner);
 
-            // Resume if told to
-            if (File.Exists(Constants.ResumeFile))
-            {
-                Console.WriteLine("{0} {1}    Resuming bot...", DateTime.Now.ToString("HH:mm:ss"), "RainBorg");
-                JObject Resuming = JObject.Parse(File.ReadAllText(Constants.ResumeFile));
-                UserPools = Resuming["userPools"].ToObject<Dictionary<ulong, List<ulong>>>();
-                Greylist = Resuming["greylist"].ToObject<List<ulong>>();
-                UserMessages = Resuming["userMessages"].ToObject<Dictionary<ulong, UserMessage>>();
-                File.Delete(Constants.ResumeFile);
-            }
-
             // Create exit handler
             handler = new ConsoleEventDelegate(ConsoleEventCallback);
             SetConsoleCtrlHandler(handler, true);
@@ -108,7 +97,7 @@ namespace RainBorg
                     {
                         ["userPools"] = JToken.FromObject(UserPools),
                         ["greylist"] = JToken.FromObject(Greylist),
-                        ["userMessages"] = JObject.FromObject(UserMessages)
+                        ["userMessages"] = JToken.FromObject(UserMessages)
                     };
                     File.WriteAllText(Constants.ResumeFile, Resuming.ToString());
                     Process.Start("RelaunchUtility.exe", "RainBorg.exe");
@@ -149,6 +138,17 @@ namespace RainBorg
             await _client.LoginAsync(TokenType.Bot, Constants.BotToken);
             await _client.StartAsync();
 
+            // Resume if told to
+            if (File.Exists(Constants.ResumeFile))
+            {
+                Console.WriteLine("{0} {1}    Resuming bot...", DateTime.Now.ToString("HH:mm:ss"), "RainBorg");
+                JObject Resuming = JObject.Parse(File.ReadAllText(Constants.ResumeFile));
+                UserPools = Resuming["userPools"].ToObject<Dictionary<ulong, List<ulong>>>();
+                Greylist = Resuming["greylist"].ToObject<List<ulong>>();
+                UserMessages = Resuming["userMessages"].ToObject<Dictionary<ulong, UserMessage>>();
+                File.Delete(Constants.ResumeFile);
+            }
+
             // Start tip cycle
             await DoTipAsync();
 
@@ -187,7 +187,7 @@ namespace RainBorg
                 {
                     ["userPools"] = JToken.FromObject(UserPools),
                     ["greylist"] = JToken.FromObject(Greylist),
-                    ["userMessages"] = JObject.FromObject(UserMessages)
+                    ["userMessages"] = JToken.FromObject(UserMessages)
                 };
                 File.WriteAllText(Constants.ResumeFile, Resuming.ToString());
                 Process.Start("RelaunchUtility.exe", "RainBorg.exe");
@@ -334,28 +334,32 @@ namespace RainBorg
                             // Loop through user pool and add them to tip
                             for (int i = 0; i < UserPools[ChannelId].Count; i++)
                             {
-                                // Make sure the message size is below the max discord message size
-                                if ((m + _client.GetUser(UserPools[ChannelId][i]).Mention + " ").Length <= 2000)
+                                try
                                 {
-                                    // Add a username mention
-                                    m += _client.GetUser(UserPools[ChannelId][i]).Mention + " ";
-
-                                    // Increment user count
-                                    userCount++;
-
-                                    // Add to tip total
-                                    tipTotal += tipAmount;
-
-                                    // Add tip to stats
-                                    try
+                                    // Make sure the message size is below the max discord message size
+                                    if ((m + _client.GetUser(UserPools[ChannelId][i]).Mention + " ").Length <= 2000)
                                     {
-                                        await Stats.Tip(tipTime, ChannelId, UserPools[ChannelId][i], tipAmount);
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        Console.WriteLine("Error adding tip to stat sheet: " + e.Message);
+                                        // Add a username mention
+                                        m += _client.GetUser(UserPools[ChannelId][i]).Mention + " ";
+
+                                        // Increment user count
+                                        userCount++;
+
+                                        // Add to tip total
+                                        tipTotal += tipAmount;
+
+                                        // Add tip to stats
+                                        try
+                                        {
+                                            await Stats.Tip(tipTime, ChannelId, UserPools[ChannelId][i], tipAmount);
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            Console.WriteLine("Error adding tip to stat sheet: " + e.Message);
+                                        }
                                     }
                                 }
+                                catch { }
                             }
 
                             // Send tip message to channel
@@ -394,21 +398,24 @@ namespace RainBorg
                         }
                     }
                 }
-                catch { }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error sending tip: " + e);
+                }
 
                 // Calculate wait time until next tip
                 if (waitMin < waitMax)
                     waitTime = r.Next(waitMin, waitMax);
                 else waitTime = 10 * 60 * 1000;
-                waitNext = DateTime.Now.AddMilliseconds(waitTime).ToString("HH:mm:ss") + " " + _timezone;
-                Console.WriteLine("{0} {1}      Next tip in {2} milliseconds ({3})", DateTime.Now.ToString("HH:mm:ss"), "Tipper", waitTime, waitNext);
+                waitNext = DateTime.Now.AddSeconds(waitTime).ToString("HH:mm:ss") + " " + _timezone;
+                Console.WriteLine("{0} {1}      Next tip in {2} seconds ({3})", DateTime.Now.ToString("HH:mm:ss"), "Tipper", waitTime, waitNext);
 
-                // Wait for X milliseconds
+                // Wait for X seconds
                 Waiting = 0;
                 while (Waiting < waitTime || Paused)
                 {
-                    await Task.Delay(500);
-                    Waiting += 500;
+                    await Task.Delay(1000);
+                    Waiting += 1;
                 }
             }
 
@@ -431,43 +438,48 @@ namespace RainBorg
         }
 
         // Remove expired users from userpools
-        private static async Task UserTimeout()
+        private static async void UserTimeout()
         {
             while (true)
             {
-                // Do not run loop while paused
-                while (Paused) { }
-
-                if (logLevel >= 3)
-                    Console.WriteLine("{0} {1}     Running timeout loop", DateTime.Now.ToString("HH:mm:ss"), "Timeout");
-
-                // Clone pools to iterate through (CPU-friendly work-around)
-                Dictionary<ulong, List<ulong>> Temp = new Dictionary<ulong, List<ulong>>();
-                foreach (KeyValuePair<ulong, List<ulong>> Pool in UserPools)
-                    Temp.Add(Pool.Key, Pool.Value);
-
-                // Iterate over all channel pools
-                foreach (KeyValuePair<ulong, List<ulong>> Pool in Temp)
+                try
                 {
-                    // Iterate over users within pool
-                    for (int i = 0; i < Pool.Value.Count; i++)
-                    {
-                        // Check if their last message was created beyond the timeout period
-                        if ((DateTime.Now.ToUniversalTime() - DateTime.MinValue.ToUniversalTime()).TotalMilliseconds >= timeoutPeriod +
-                            (UserMessages[Pool.Value[i]].CreatedAt.ToUniversalTime() - DateTime.MinValue.ToUniversalTime()).TotalMilliseconds)
-                        {
-                            if (logLevel >= 3)
-                                Console.WriteLine("{0} {1}     Checking {2} against {3} on channel #{4}", DateTime.Now.ToString("HH:mm:ss"), "Timeout",
-                                    (UserMessages[Pool.Value[i]].CreatedAt - DateTime.MinValue).TotalMilliseconds, (DateTime.Now - DateTime.MinValue).TotalMilliseconds, _client.GetChannel(Pool.Key));
+                    // Do not run loop while paused
+                    while (Paused) { }
 
-                            // Remove user from channel's pool
-                            if (logLevel >= 1)
-                                Console.WriteLine("{0} {1}     Removed {2} ({3}) from user pool on channel #{4}", DateTime.Now.ToString("HH:mm:ss"), "Timeout",
-                                    _client.GetUser(Pool.Value[i]), Pool.Value[i], _client.GetChannel(Pool.Key));
-                            await RemoveUserAsync(_client.GetUser(Pool.Value[i]), Pool.Key);
+                    if (logLevel >= 3)
+                        Console.WriteLine("{0} {1}     Running timeout loop", DateTime.Now.ToString("HH:mm:ss"), "Timeout");
+
+                    // Clone pools to iterate through (CPU-friendly work-around)
+                    Dictionary<ulong, List<ulong>> Temp = new Dictionary<ulong, List<ulong>>();
+                    foreach (KeyValuePair<ulong, List<ulong>> Pool in UserPools)
+                        Temp.Add(Pool.Key, Pool.Value);
+
+                    // Iterate over all channel pools
+                    foreach (KeyValuePair<ulong, List<ulong>> Pools in Temp)
+                    {
+                        List<ulong> Pool = Pools.Value;
+
+                        // Iterate over users within pool
+                        for (int i = 0; i < Pool.Count; i++)
+                        {
+                            // Check if their last message was created beyond the timeout period
+                            if ((DateTime.Now - UserMessages[Pool[i]].CreatedAt.LocalDateTime).TotalSeconds > timeoutPeriod)
+                            {
+                                if (logLevel >= 3)
+                                    Console.WriteLine("{0} {1}     Checking {2} against {3} on channel #{4}", DateTime.Now.ToString("HH:mm:ss"), "Timeout",
+                                        (UserMessages[Pool[i]].CreatedAt.LocalDateTime - DateTime.MinValue).TotalSeconds, (DateTime.Now - DateTime.MinValue).TotalSeconds, _client.GetChannel(Pools.Key));
+
+                                // Remove user from channel's pool
+                                if (logLevel >= 1)
+                                    Console.WriteLine("{0} {1}     Removed {2} ({3}) from user pool on channel #{4}", DateTime.Now.ToString("HH:mm:ss"), "Timeout",
+                                        _client.GetUser(Pool[i]), Pool[i], _client.GetChannel(Pools.Key));
+                                await RemoveUserAsync(_client.GetUser(Pool[i]), Pools.Key);
+                            }
                         }
                     }
                 }
+                catch { }
 
                 // Wait
                 await Task.Delay(1);
